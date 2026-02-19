@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TokenWise — AI API Cost Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --success: #22c55e;
+      --success-dim: rgba(34, 197, 94, 0.15);
+      --warning: #facc15;
+      --warning-dim: rgba(250, 204, 21, 0.15);
+      --danger: #ef4444;
+      --danger-dim: rgba(239, 68, 68, 0.15);
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ─── Header ───────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .header-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-light), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .header-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-align: right;
+    }
+
+    /* ─── Layout ───────────────────────────────────────────────── */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ─── Cards ─────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .card-icon {
+      float: right;
+      font-size: 1.8rem;
+      opacity: 0.6;
+    }
+
+    .card-value.green { color: var(--success); }
+    .card-value.accent { color: var(--accent-light); }
+    .card-value.cyan { color: var(--cyan); }
+    .card-value.purple { color: var(--purple); }
+
+    /* ─── Chart Card ───────────────────────────────────────────── */
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 300px;
+    }
+
+    /* ─── Cache Gauge ──────────────────────────────────────────── */
+    .gauge-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 1rem;
+    }
+
+    .gauge-value {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-top: 1rem;
+    }
+
+    .gauge-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Recommendations ──────────────────────────────────────── */
+    .rec-list {
+      list-style: none;
+    }
+
+    .rec-item {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      border-left: 4px solid transparent;
+    }
+
+    .rec-item.critical { background: var(--danger-dim); border-left-color: var(--danger); }
+    .rec-item.high { background: var(--danger-dim); border-left-color: var(--danger); }
+    .rec-item.medium { background: var(--warning-dim); border-left-color: var(--warning); }
+    .rec-item.low { background: rgba(99, 102, 241, 0.1); border-left-color: var(--accent); }
+
+    .rec-title {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .rec-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .rec-action {
+      font-size: 0.85rem;
+      color: var(--accent-light);
+    }
+
+    .rec-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .rec-badge.critical { background: var(--danger); color: white; }
+    .rec-badge.high { background: var(--danger); color: white; }
+    .rec-badge.medium { background: var(--warning); color: #1e293b; }
+    .rec-badge.low { background: var(--accent); color: white; }
+
+    /* ─── Model Table ──────────────────────────────────────────── */
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .model-table th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .model-table td {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    }
+
+    .model-table tr:hover td {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .model-name {
+      font-weight: 600;
+      color: var(--accent-light);
+    }
+
+    .cache-bar {
+      display: inline-block;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      width: 60px;
+      position: relative;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    .cache-bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* ─── Footer ───────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .footer a {
+      color: var(--accent-light);
+      text-decoration: none;
+    }
+
+    /* ─── Loading ──────────────────────────────────────────────── */
+    .loading {
+      text-align: center;
+      padding: 4rem;
+      color: var(--text-secondary);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .header { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .header-meta { text-align: center; }
+      .chart-wrapper { height: 250px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-brand">
+      <div class="header-logo">TW</div>
+      <div>
+        <div class="header-title">TokenWise</div>
+        <div class="header-subtitle">AI API Cost Intelligence</div>
+      </div>
+    </div>
+    <div class="header-meta" id="header-meta">Loading...</div>
+  </div>
+
+  <div class="container">
+    <!-- Summary Cards -->
+    <div class="grid-4" id="summary-cards">
+      <div class="card">
+        <div class="card-icon">💰</div>
+        <div class="card-title">Total Spend</div>
+        <div class="card-value accent" id="total-spend">—</div>
+        <div class="card-subtitle" id="spend-breakdown"></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Avg Cost / Request</div>
+        <div class="card-value cyan" id="avg-cost">—</div>
+        <div class="card-subtitle" id="request-count"></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💚</div>
+        <div class="card-title">Cache Savings</div>
+        <div class="card-value green" id="cache-savings">—</div>
+        <div class="card-subtitle" id="savings-detail"></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Cache Hit Rate</div>
+        <div class="card-value purple" id="cache-rate">—</div>
+        <div class="card-subtitle" id="cache-detail"></div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <h3>📈 Cost Trend (Daily)</h3>
+        <div class="chart-wrapper">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>🤖 Model Cost Comparison</h3>
+        <div class="chart-wrapper">
+          <canvas id="modelChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Cache Gauge -->
+      <div class="chart-card">
+        <h3>🎯 Cache Performance</h3>
+        <div class="chart-wrapper">
+          <canvas id="cacheChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Cost Breakdown Doughnut -->
+      <div class="chart-card">
+        <h3>🍩 Cost Breakdown</h3>
+        <div class="chart-wrapper">
+          <canvas id="breakdownChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Table -->
+    <div class="chart-card" style="margin-bottom: 1.5rem;">
+      <h3>📋 Model Details</h3>
+      <div style="overflow-x: auto;">
+        <table class="model-table" id="model-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Requests</th>
+              <th>Total Cost</th>
+              <th>Input</th>
+              <th>Output</th>
+              <th>Cache Read</th>
+              <th>Cache Hit Rate</th>
+            </tr>
+          </thead>
+          <tbody id="model-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="chart-card" id="rec-section" style="margin-bottom: 1.5rem;">
+      <h3>💡 Optimization Recommendations</h3>
+      <ul class="rec-list" id="rec-list"></ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    Powered by <a href="https://github.com/smysle/tokenwise" target="_blank">TokenWise</a> — Open-source AI API Cost Intelligence
+  </div>
+
+  <script>
+    // ─── Data injection point ───────────────────────────────────
+    // The server injects data as: window.__TOKENWISE_DATA__ = { ... };
+    // If not present, try fetching /api/data
+
+    function formatCost(n) {
+      if (n >= 1) return '$' + n.toFixed(2);
+      if (n >= 0.01) return '$' + n.toFixed(4);
+      return '$' + n.toFixed(6);
+    }
+
+    function formatTokens(n) {
+      if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+      return String(n);
+    }
+
+    function getCacheColor(rate) {
+      if (rate >= 60) return '#22c55e';
+      if (rate >= 30) return '#facc15';
+      return '#ef4444';
+    }
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(51, 65, 85, 0.5)';
+    Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
+
+    function render(data) {
+      // Summary cards
+      document.getElementById('total-spend').textContent = formatCost(data.summary.totalCost);
+      document.getElementById('spend-breakdown').textContent =
+        `Input: ${formatCost(data.costBreakdown.input)} | Output: ${formatCost(data.costBreakdown.output)}`;
+      document.getElementById('avg-cost').textContent = formatCost(data.summary.avgCostPerRequest);
+      document.getElementById('request-count').textContent = `${data.summary.requestCount} requests`;
+      document.getElementById('cache-savings').textContent = formatCost(data.summary.cacheSavings);
+      document.getElementById('savings-detail').textContent =
+        `${formatTokens(data.cacheStats.totalCached)} tokens served from cache`;
+      document.getElementById('cache-rate').textContent = data.summary.cacheHitRate.toFixed(1) + '%';
+      document.getElementById('cache-detail').textContent =
+        `${formatTokens(data.cacheStats.totalCached)} / ${formatTokens(data.cacheStats.totalPrompt)} prompt tokens`;
+
+      document.getElementById('header-meta').innerHTML =
+        `${data.summary.requestCount} requests analyzed<br>${data.dailyTrend.length} days of data`;
+
+      // ─── Cost Trend Chart ────────────────────────────────────
+      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: data.dailyTrend.map(d => d.date.slice(5)), // MM-DD
+          datasets: [{
+            label: 'Daily Cost ($)',
+            data: data.dailyTrend.map(d => d.totalCost),
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            pointBackgroundColor: '#6366f1',
+            borderWidth: 2,
+          }, {
+            label: 'Requests',
+            data: data.dailyTrend.map(d => d.requests),
+            borderColor: '#06b6d4',
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            pointRadius: 4,
+            borderWidth: 2,
+            borderDash: [5, 5],
+            yAxisID: 'y1',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { intersect: false, mode: 'index' },
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  if (ctx.datasetIndex === 0) return `Cost: ${formatCost(ctx.raw)}`;
+                  return `Requests: ${ctx.raw}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              position: 'left',
+              title: { display: true, text: 'Cost ($)' },
+              ticks: { callback: v => formatCost(v) },
+            },
+            y1: {
+              position: 'right',
+              title: { display: true, text: 'Requests' },
+              grid: { drawOnChartArea: false },
+            }
+          }
+        }
+      });
+
+      // ─── Model Cost Chart ────────────────────────────────────
+      const modelCtx = document.getElementById('modelChart').getContext('2d');
+      const modelColors = ['#6366f1', '#a855f7', '#06b6d4', '#22c55e', '#facc15', '#ef4444'];
+      new Chart(modelCtx, {
+        type: 'bar',
+        data: {
+          labels: data.models.map(m => m.model),
+          datasets: [{
+            label: 'Input Cost',
+            data: data.models.map(m => m.costs.input),
+            backgroundColor: '#6366f1',
+            borderRadius: 4,
+          }, {
+            label: 'Output Cost',
+            data: data.models.map(m => m.costs.output),
+            backgroundColor: '#a855f7',
+            borderRadius: 4,
+          }, {
+            label: 'Cache Read',
+            data: data.models.map(m => m.costs.cache_read),
+            backgroundColor: '#22c55e',
+            borderRadius: 4,
+          }, {
+            label: 'Cache Write',
+            data: data.models.map(m => m.costs.cache_write),
+            backgroundColor: '#facc15',
+            borderRadius: 4,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${formatCost(ctx.raw)}`
+              }
+            }
+          },
+          scales: {
+            x: { stacked: true },
+            y: {
+              stacked: true,
+              ticks: { callback: v => formatCost(v) },
+            }
+          }
+        }
+      });
+
+      // ─── Cache Performance Doughnut ──────────────────────────
+      const cacheCtx = document.getElementById('cacheChart').getContext('2d');
+      const hitRate = data.summary.cacheHitRate;
+      new Chart(cacheCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Cached (Hit)', 'Uncached (Miss)', 'Cache Created'],
+          datasets: [{
+            data: [
+              data.cacheStats.totalCached,
+              data.cacheStats.totalPrompt - data.cacheStats.totalCached,
+              data.cacheStats.totalCacheCreation,
+            ],
+            backgroundColor: ['#22c55e', '#ef4444', '#facc15'],
+            borderWidth: 0,
+            spacing: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.label}: ${formatTokens(ctx.raw)} tokens`
+              }
+            }
+          }
+        },
+        plugins: [{
+          id: 'centerText',
+          afterDraw(chart) {
+            const { ctx: c, width, height } = chart;
+            c.save();
+            c.font = 'bold 2.2rem -apple-system, sans-serif';
+            c.fillStyle = getCacheColor(hitRate);
+            c.textAlign = 'center';
+            c.textBaseline = 'middle';
+            c.fillText(hitRate.toFixed(1) + '%', width / 2, height / 2 - 10);
+            c.font = '0.8rem -apple-system, sans-serif';
+            c.fillStyle = '#94a3b8';
+            c.fillText('Cache Hit Rate', width / 2, height / 2 + 20);
+            c.restore();
+          }
+        }]
+      });
+
+      // ─── Cost Breakdown Doughnut ─────────────────────────────
+      const breakCtx = document.getElementById('breakdownChart').getContext('2d');
+      new Chart(breakCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Input', 'Output', 'Cache Read', 'Cache Write'],
+          datasets: [{
+            data: [
+              data.costBreakdown.input,
+              data.costBreakdown.output,
+              data.costBreakdown.cache_read,
+              data.costBreakdown.cache_write,
+            ],
+            backgroundColor: ['#6366f1', '#a855f7', '#22c55e', '#facc15'],
+            borderWidth: 0,
+            spacing: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.label}: ${formatCost(ctx.raw)}`
+              }
+            }
+          }
+        }
+      });
+
+      // ─── Model Table ─────────────────────────────────────────
+      const tbody = document.getElementById('model-tbody');
+      tbody.innerHTML = data.models.map(m => {
+        const cacheColor = getCacheColor(m.cacheHitRate);
+        const barWidth = Math.min(100, m.cacheHitRate);
+        return `<tr>
+          <td><span class="model-name">${m.model}</span></td>
+          <td>${m.requests}</td>
+          <td><strong>${formatCost(m.totalCost)}</strong></td>
+          <td>${formatCost(m.costs.input)}</td>
+          <td>${formatCost(m.costs.output)}</td>
+          <td>${formatCost(m.costs.cache_read)}</td>
+          <td>
+            <span class="cache-bar"><span class="cache-bar-fill" style="width:${barWidth}%;background:${cacheColor}"></span></span>
+            <span style="color:${cacheColor}">${m.cacheHitRate.toFixed(1)}%</span>
+          </td>
+        </tr>`;
+      }).join('');
+
+      // ─── Recommendations ─────────────────────────────────────
+      const recList = document.getElementById('rec-list');
+      if (data.recommendations.length === 0) {
+        recList.innerHTML = '<li style="padding:1rem;color:var(--success);">✅ No optimization issues detected. Great job!</li>';
+      } else {
+        recList.innerHTML = data.recommendations.map(r => `
+          <li class="rec-item ${r.priority}">
+            <div class="rec-title">
+              ${r.title}
+              <span class="rec-badge ${r.priority}">${r.priority}</span>
+            </div>
+            <div class="rec-desc">${r.description}</div>
+            <div class="rec-action">→ ${r.action}</div>
+            ${r.savings ? `<div style="color:var(--success);font-size:0.8rem;margin-top:0.25rem">${r.savings}</div>` : ''}
+          </li>
+        `).join('');
+      }
+    }
+
+    // ─── Data Loading ─────────────────────────────────────────
+    if (window.__TOKENWISE_DATA__) {
+      render(window.__TOKENWISE_DATA__);
+    } else {
+      fetch('/api/data')
+        .then(r => r.json())
+        .then(render)
+        .catch(err => {
+          document.querySelector('.container').innerHTML =
+            '<div class="loading"><div class="loading-spinner"></div><p style="margin-top:1rem">Waiting for data...</p><p style="font-size:0.8rem;color:var(--text-muted);">Make sure you started the dashboard with: <code>tokenwise dashboard &lt;logfile&gt;</code></p></div>';
+        });
+    }
+  </script>
+</body>
+</html>

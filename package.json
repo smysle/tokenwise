@@ -1,0 +1,45 @@
+{
+  "name": "tokenwise",
+  "version": "1.0.0",
+  "description": "Open-source AI API cost intelligence — track spending, optimize caching, compare models",
+  "main": "src/analyzer.js",
+  "bin": {
+    "tokenwise": "bin/tokenwise.js"
+  },
+  "scripts": {
+    "demo": "node bin/tokenwise.js demo",
+    "analyze": "node bin/tokenwise.js analyze sample-data/usage.json",
+    "dashboard": "node bin/tokenwise.js dashboard sample-data/usage.json"
+  },
+  "keywords": [
+    "ai",
+    "api",
+    "cost",
+    "tokens",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "monitoring",
+    "optimization",
+    "cache",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smysle/tokenwise.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "dashboard/",
+    "sample-data/",
+    "README.md",
+    "LICENSE"
+  ]
+}
