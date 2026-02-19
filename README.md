@@ -156,9 +156,12 @@ Prices are per **1M tokens** in USD.
 | Model | Input | Output | Cache Read | Cache Write |
 |-------|------:|-------:|-----------:|------------:|
 | claude-opus-4-6 | $5.00 | $25.00 | $0.50 | $6.25 |
+| claude-opus-4-5 | $5.00 | $25.00 | $0.50 | $6.25 |
 | claude-opus-4 | $15.00 | $75.00 | $1.50 | $18.75 |
 | claude-sonnet-4-6 | $3.00 | $15.00 | $0.30 | $3.75 |
+| claude-sonnet-4-5 | $3.00 | $15.00 | $0.30 | $3.75 |
 | claude-sonnet-4 | $3.00 | $15.00 | $0.30 | $3.75 |
+| claude-haiku-4-5 | $1.00 | $5.00 | $0.10 | $1.25 |
 | claude-3.5-haiku | $0.80 | $4.00 | $0.08 | $1.00 |
 | claude-3-haiku | $0.25 | $1.25 | $0.03 | $0.30 |
 
@@ -166,13 +169,14 @@ Prices are per **1M tokens** in USD.
 
 | Model | Input | Output | Cache Read | Cache Write |
 |-------|------:|-------:|-----------:|------------:|
-| gpt-5.2 | $1.75 | $14.00 | $0.44 | $1.75 |
-| gpt-5.2-pro | $21.00 | $168.00 | $5.25 | $21.00 |
-| gpt-5.1 / gpt-5 | $1.25 | $10.00 | $0.31 | $1.25 |
-| gpt-4.1 | $2.00 | $8.00 | $0.50 | $2.00 |
+| gpt-5.2 | $1.75 | $14.00 | $0.875 | $1.75 |
+| gpt-5.2-pro | $21.00 | $168.00 | $10.50 | $21.00 |
+| gpt-5.1 / gpt-5 | $1.25 | $10.00 | $0.625 | $1.25 |
+| gpt-5-mini | $0.25 | $2.00 | $0.125 | $0.25 |
+| gpt-4.1 | $2.00 | $8.00 | $1.00 | $2.00 |
+| gpt-4.1-mini | $0.40 | $1.60 | $0.20 | $0.40 |
 | gpt-4o | $2.50 | $10.00 | $1.25 | $2.50 |
 | gpt-4o-mini | $0.15 | $0.60 | $0.075 | $0.15 |
-| o4-mini / o3-mini | $1.10 | $4.40 | $0.28 | $1.10 |
 
 ### Google (Gemini)
 
@@ -205,7 +209,39 @@ Prices are per **1M tokens** in USD.
 | kimi-k2.5 | $0.60 | $3.00 | $0.15 | $0.60 |
 | minimax-m2 | $0.30 | $1.20 | $0.08 | $0.30 |
 
-50+ models supported. Unknown models use mid-range fallback pricing ($3.00/$15.00 per 1M tokens).
+### Mistral
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| mistral-large | $2.00 | $6.00 | $0.50 | $2.00 |
+| mistral-medium | $0.40 | $1.20 | $0.10 | $0.40 |
+| mistral-small | $0.10 | $0.30 | $0.03 | $0.10 |
+
+### Meta (Llama)
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| llama-4-maverick | $0.20 | $0.60 | $0.05 | $0.20 |
+| llama-4-scout | $0.10 | $0.30 | $0.03 | $0.10 |
+
+### OpenAI Reasoning (o-series)
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| o4-mini | $1.10 | $4.40 | $0.55 | $1.10 |
+| o3 | $2.00 | $8.00 | $1.00 | $2.00 |
+| o3-pro | $20.00 | $80.00 | $10.00 | $20.00 |
+| o1 | $15.00 | $60.00 | $7.50 | $15.00 |
+
+### OpenAI Codex
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| gpt-5.3-codex | $1.25 | $10.00 | $0.625 | $1.25 |
+| gpt-5.2-codex | $1.25 | $10.00 | $0.625 | $1.25 |
+| gpt-5.1-codex | $1.25 | $10.00 | $0.625 | $1.25 |
+
+89 models across 10 providers. Unknown models use mid-range fallback pricing ($3.00/$15.00 per 1M tokens).
 
 ---
 
