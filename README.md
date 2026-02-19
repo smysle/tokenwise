@@ -155,9 +155,10 @@ Prices are per **1M tokens** in USD.
 
 | Model | Input | Output | Cache Read | Cache Write |
 |-------|------:|-------:|-----------:|------------:|
+| claude-opus-4-6 | $5.00 | $25.00 | $0.50 | $6.25 |
 | claude-opus-4 | $15.00 | $75.00 | $1.50 | $18.75 |
+| claude-sonnet-4-6 | $3.00 | $15.00 | $0.30 | $3.75 |
 | claude-sonnet-4 | $3.00 | $15.00 | $0.30 | $3.75 |
-| claude-3.5-sonnet | $3.00 | $15.00 | $0.30 | $3.75 |
 | claude-3.5-haiku | $0.80 | $4.00 | $0.08 | $1.00 |
 | claude-3-haiku | $0.25 | $1.25 | $0.03 | $0.30 |
 
@@ -165,12 +166,27 @@ Prices are per **1M tokens** in USD.
 
 | Model | Input | Output | Cache Read | Cache Write |
 |-------|------:|-------:|-----------:|------------:|
-| gpt-5.2 | $5.00 | $20.00 | $2.50 | $5.00 |
+| gpt-5.2 | $1.75 | $14.00 | $0.44 | $1.75 |
+| gpt-5.2-pro | $21.00 | $168.00 | $5.25 | $21.00 |
+| gpt-5.1 / gpt-5 | $1.25 | $10.00 | $0.31 | $1.25 |
+| gpt-4.1 | $2.00 | $8.00 | $0.50 | $2.00 |
 | gpt-4o | $2.50 | $10.00 | $1.25 | $2.50 |
 | gpt-4o-mini | $0.15 | $0.60 | $0.075 | $0.15 |
-| gpt-4-turbo | $10.00 | $30.00 | $5.00 | $10.00 |
-| gpt-4 | $30.00 | $60.00 | $15.00 | $30.00 |
-| gpt-3.5-turbo | $0.50 | $1.50 | $0.25 | $0.50 |
+| o4-mini / o3-mini | $1.10 | $4.40 | $0.28 | $1.10 |
+
+### Google (Gemini)
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| gemini-3-pro | $2.00 | $12.00 | $0.50 | $2.00 |
+| gemini-3-flash | $0.50 | $3.00 | $0.13 | $0.50 |
+
+### xAI (Grok)
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| grok-4.1 | $2.00 | $10.00 | $0.50 | $2.00 |
+| grok-4.1-fast | $0.20 | $0.50 | $0.05 | $0.20 |
 
 ### DeepSeek
 
@@ -178,8 +194,18 @@ Prices are per **1M tokens** in USD.
 |-------|------:|-------:|-----------:|------------:|
 | deepseek-chat | $0.27 | $1.10 | $0.07 | $0.27 |
 | deepseek-reasoner | $0.55 | $2.19 | $0.14 | $0.55 |
+| deepseek-v3 | $0.28 | $0.42 | $0.07 | $0.28 |
 
-Unknown models use a mid-range fallback pricing ($3.00/$15.00 per 1M tokens).
+### Chinese Models
+
+| Model | Input | Output | Cache Read | Cache Write |
+|-------|------:|-------:|-----------:|------------:|
+| glm-5 | $1.00 | $3.20 | $0.25 | $1.00 |
+| qwen-max | $1.20 | $6.00 | $0.30 | $1.20 |
+| kimi-k2.5 | $0.60 | $3.00 | $0.15 | $0.60 |
+| minimax-m2 | $0.30 | $1.20 | $0.08 | $0.30 |
+
+50+ models supported. Unknown models use mid-range fallback pricing ($3.00/$15.00 per 1M tokens).
 
 ---
 
